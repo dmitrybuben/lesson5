@@ -1,12 +1,14 @@
 package org.lesson5;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class Program {
+public class Task1 {
 
     private static final int CHAR_BOUND_L = 65; // номер начального символа латинского алфавита
     private static final int CHAR_BOUND_H = 90; // номер начального символа латинского алфавита
@@ -25,6 +27,23 @@ public class Program {
         writeFileContents("sample02.txt", 5);
         concatenate("sample01.txt", "sample02.txt", "sampleOut.txt");
         System.out.println(searchInFile("sampleOut.txt", TO_SEARCH));
+
+        // создать 10 файлов для поиска
+        String[] fileNames = new String[10];
+        for (int i = 0; i < fileNames.length; i++) {
+            fileNames[i] = "file_" + i + ".txt";
+            writeFileContents(fileNames[i], 90, 2);
+            System.out.printf("Файл создан.\n", fileNames[i]);
+        }
+        // Поиск в текущей директории
+        try {
+            List<String> listResult = searchMatch(new File("."), TO_SEARCH);
+            for (String s : listResult) {
+                System.out.printf("Файл %s содержит искомое слово '%s'\n", s, TO_SEARCH);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -133,5 +152,22 @@ public class Program {
             e.printStackTrace();
         }
         return false;
+    }
+
+    //поиск в директории
+    static List<String> searchMatch(File dir, String search) throws IOException {
+        List<String> list = new ArrayList<>();
+        File[] files = dir.listFiles();
+        if (files == null){
+            return list;
+        }
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isDirectory())
+                continue;
+            if (searchInFile(files[i].getCanonicalPath(), search)) {
+                list.add(files[i].getName());
+            }
+        }
+        return list;
     }
 }

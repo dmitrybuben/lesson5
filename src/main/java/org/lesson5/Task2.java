@@ -39,6 +39,5 @@ public class Task2 {
                 print(files[i], indent, subDirCounter == subDirTotal);
             }
         }
-
     }
 }

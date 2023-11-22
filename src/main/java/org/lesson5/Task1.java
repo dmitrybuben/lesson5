@@ -56,7 +56,7 @@ public class Task1 {
             System.out.println("Ошибка ввода/вывода");
         }
 
-        // Копия с подпапками - создаются множественные подпапки
+        // Копия с поддиректориями
         try {
             copyAll(new File("."), Path.of("./backupAll"));
         } catch (IOException e) {
@@ -205,7 +205,13 @@ public class Task1 {
             }
         }
     }
-    // создаются множественные подпапки 'backup'
+
+    /**
+     * Создать копию файлов и поддиректорий
+     * @param source
+     * @param target
+     * @throws IOException
+     */
     private static void copyAll(File source, Path target) throws IOException {
         if (source.isDirectory()) {
             File[] files = source.listFiles();

@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -43,6 +46,21 @@ public class Task1 {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+
+        // Копия текущей директории
+        try {
+            copyDirectory(new File("."), "./backup");
+
+        } catch (IOException e) {
+            System.out.println("Ошибка ввода/вывода");
+        }
+
+        // Копия с подпапками - создаются множественные подпапки
+        try {
+            copyAll(new File("."), Path.of("./backupAll"));
+        } catch (IOException e) {
+            System.out.println("Ошибка ввода/вывода");
         }
     }
 
@@ -158,7 +176,7 @@ public class Task1 {
     static List<String> searchMatch(File dir, String search) throws IOException {
         List<String> list = new ArrayList<>();
         File[] files = dir.listFiles();
-        if (files == null){
+        if (files == null) {
             return list;
         }
         for (int i = 0; i < files.length; i++) {
@@ -169,5 +187,36 @@ public class Task1 {
             }
         }
         return list;
+    }
+
+    // HW5: Написать функцию, создающую резервную копию всех файлов в директории во вновь созданную папку ./backup
+    // избегая директории
+    private static void copyDirectory(File dir, String backUpDir) throws IOException {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            Files.createDirectory(Path.of(backUpDir));
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    continue;
+                }
+                Path source = file.toPath();
+                Path destination = Path.of(backUpDir, file.getName());
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+    // создаются множественные подпапки 'backup'
+    private static void copyAll(File source, Path target) throws IOException {
+        if (source.isDirectory()) {
+            File[] files = source.listFiles();
+            Files.createDirectories(target);
+            if (files != null) {
+                for (File file : files) {
+                    copyAll(file, target.resolve(file.getName()));
+                }
+            }
+        } else {
+            Files.copy(source.toPath(), target, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 }
